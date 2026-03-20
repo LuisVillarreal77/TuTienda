@@ -1,16 +1,81 @@
 # tu_tienda
+Aplicación móvil desarrollada en Flutter para la comercialización de productos artesanales del municipio de María La Baja, Bolívar (Colombia).
+Permite a los usuarios explorar productos, visualizar tiendas y gestionar un carrito de compras de forma intuitiva.
 
-A new Flutter project.
+# Funcionalidades
++ Visualización de tiendas destacadas
 
-## Getting Started
++ Listado de productos desde Firebase (Firestore)
 
-This project is a starting point for a Flutter application.
++ Navegación a detalle de productos
 
-A few resources to get you started if this is your first Flutter project:
++ Carrito de compras con gestión de cantidades
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
++ Interfaz moderna y responsiva
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
++ Actualización dinámica de datos
+
+# Tecnologías utilizadas
+
+Flutter (Framework de desarrollo móvil)
+
+Dart (Lenguaje de programación)
+
+Firebase Firestore (Base de datos en la nube)
+
+Provider (Gestión de estado)
+
+Material Design
+
+# Instalación y ejecución
+
+Clonar el repositorio:
+
+git clone https://github.com/LuisVillarreal77/TuTienda.git
+
+Entrar al proyecto:
+
+cd tu_tienda
+
+Instalar dependencias:
+
+flutter pub get
+
+Ejecutar la aplicación:
+
+flutter run
+
+# Configuración de Firebase
+
+IMPORTANTE:
+Por motivos de seguridad, los archivos de configuración de Firebase no están incluidos en este repositorio.
+
+Para ejecutar el proyecto correctamente:
+
+Crear un proyecto en Firebase
+
+Registrar una app Android
+
+Descargar el archivo:
+
+google-services.json
+
+Ubicarlo en:
+
+android/app/
+
+Configurar Firebase en Flutter (opcionalmente usando FlutterFire CLI)
+
+# Estructura del proyecto 
+lib/
+ ├── models/          # Modelos de datos
+ ├── providers/       # Gestión de estado (Provider)
+ ├── screens/         # Pantallas principales
+ ├── widgets/         # Componentes reutilizables
+ └── main.dart        # Punto de entrada
+
+ # Autor
+
+Luis Villarreal
+Proyecto de grado - Desarrollo de aplicación móvil
+Colombia 🇨🇴 - Maria La Baja (Bolívar)
