@@ -1,8 +1,7 @@
 // splash_screen.dart
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter/animation.dart';
-import 'package:tu_tienda/screens/login_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -45,20 +44,24 @@ class _SplashScreenState extends State<SplashScreen>
     // Iniciar la animación
     _controller.forward();
 
-    Timer(const Duration(seconds: 3), () {
-      if (mounted) {
-        Navigator.pushReplacementNamed(context, '/login')
-        .then((_) {})
-        .catchError((error) {
-          print('Error en navegación: $error');
-
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => const LoginScreen()),
-          );
-        });
-      }
-    });
+    _checkLogin();
   }
+
+  Future<void> _checkLogin() async {
+  await Future.delayed(const Duration(seconds: 3));
+
+  if (!mounted) return;
+
+  final user = FirebaseAuth.instance.currentUser;
+
+  print("Usuario actual: $user");
+
+  if (user != null) {
+    Navigator.pushReplacementNamed(context, '/home');
+  } else {
+    Navigator.pushReplacementNamed(context, '/login');
+  }
+}
 
   @override
   void dispose() {

@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -14,6 +15,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   //Variable para mostrar/ocultar contraseña
   bool _obscurePassword = true;
+
+  bool loading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -113,23 +116,23 @@ class _LoginScreenState extends State<LoginScreen> {
                 width: double.infinity,
                 height: 55,
                 child: ElevatedButton(
-                  onPressed: () {
-                    _login(context);
-                  },
+                  onPressed: loading ? null : () => _login(context),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.deepOrange[400],
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const Text(
-                    'Iniciar Sesión',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
+                 child: loading
+                  ? const CircularProgressIndicator(color: Colors.white)
+                  : const Text(
+                   'Iniciar Sesión',
+                  style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                   ),
+                 ),
                 ),
               ),
 
@@ -141,7 +144,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: OutlinedButton(
                   onPressed: () {
                     //logica para ir a la pantalla de registro
-                    print('Registrarse');
+                    Navigator.pushNamed(context, '/register');
                   },
                   style: OutlinedButton.styleFrom(
                     shape: RoundedRectangleBorder(
@@ -166,53 +169,64 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   //Funcion para simular el login
-  void _login(BuildContext context) {
-    final email = _emailController.text.trim();
-    final password = _passwordController.text.trim();
+  void _login(BuildContext context) async {
+  final email = _emailController.text.trim();
+  final password = _passwordController.text.trim();
 
-     //funcion para mostrar un dialogo de error
-    void  showErrorDialog(BuildContext context, String message) {
-      showDialog(
+  // Activar loading
+  setState(() => loading = true);
+
+  // Validaciones
+  if (email.isEmpty || password.isEmpty) {
+    setState(() => loading = false);
+    _showError(context, 'Por favor, completa todos los campos.');
+    return;
+  }
+
+  if (!email.contains('@')) {
+    setState(() => loading = false);
+    _showError(context, 'Correo electrónico inválido.');
+    return;
+  }
+
+  try {
+    await FirebaseAuth.instance.signInWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+
+    Navigator.pushReplacementNamed(context, '/home');
+
+  } on FirebaseAuthException catch (e) {
+    String message = "Error al iniciar sesión";
+
+    if (e.code == 'user-not-found') {
+      message = "Usuario no encontrado";
+    } else if (e.code == 'wrong-password') {
+      message = "Contraseña incorrecta";
+    } else if (e.code == 'invalid-email') {
+      message = "Correo inválido";
+    }
+
+    _showError(context, message);
+  }
+
+  // Desactivar loading
+  setState(() => loading = false);
+}
+  void _showError(BuildContext context, String message) {
+    showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Error al iniciar sesión'),
+        title: const Text('Error'),
         content: Text(message),
         actions: [
-          TextButton(onPressed:() => Navigator.pop(context), 
-          child: const Text('OK'),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
           ),
         ],
       ),
-     );
- }
-
-    //valida si los campos no estan vacios
-    if (email.isEmpty || password.isEmpty) {
-      showErrorDialog(context, 'Por favor, completa todos los campos.');
-      return;
-    }
-
-    if (!email.contains('@')) {
-      showErrorDialog(context, 'Por favor, ingresa un correo electrónico válido.');
-      return;
-    }
-
-    // Simula un proceso de autenticación
-    if (email == 'admin20@gmail.com' && password == 'admin123') {
-      // Si el login es exitoso, navega a la pantalla principal
-      Navigator.pushReplacementNamed(context, '/home');
-    } else {
-      // Si el login falla, muestra un mensaje de error
-      showErrorDialog(context, 'Correo o contraseña incorrectos.');
-    }
-
-   
-
-    // @override
-    // void dispose() {
-    //   _emailController.dispose();
-    //   _passwordController.dispose();
-    //   super.dispose();
-    //      }
+    );
   }
 }

@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'product_detail_screen.dart';
 import 'package:provider/provider.dart';
@@ -80,59 +81,69 @@ class _MyHomePageState extends State<MyHomePage> {
               //logica para la acción al presionar el botón de perfil de usuario
             },
           ),
+
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () async {
+              await FirebaseAuth.instance.signOut();
+              Navigator.pushReplacementNamed(context, '/login');
+            },
+          ),
         ],
       ),
 
-      body:
-      SafeArea(child: 
-       SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          //banner de promociones
-          _buildPromotionBanner(),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              //banner de promociones
+              _buildPromotionBanner(),
 
-          const SizedBox(height: 10),
+              const SizedBox(height: 10),
 
-          //categorías de productos
-          _buildCategoriesSection(),
-          const SizedBox(height: 10),
+              //categorías de productos
+              _buildCategoriesSection(),
+              const SizedBox(height: 10),
 
-          //tiendas destacadas
-          _buildFeaturedShops(),
-          const SizedBox(height: 10),
+              //tiendas destacadas
+              _buildFeaturedShops(),
+              const SizedBox(height: 10),
 
-          //productos destacados
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 16.0,
-              vertical: 8.0,
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Productos Destacados',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              //productos destacados
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16.0,
+                  vertical: 8.0,
                 ),
-                TextButton(
-                  onPressed: () {
-                    //logica para ver todos los productos destacados
-                  },
-                  child: Text(
-                    'Ver Todos',
-                    style: TextStyle(color: Colors.deepOrange[400]),
-                  ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Productos Destacados',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        //logica para ver todos los productos destacados
+                      },
+                      child: Text(
+                        'Ver Todos',
+                        style: TextStyle(color: Colors.deepOrange[400]),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+
+              //Productos destacados
+              _buildFeaturedProducts(),
+            ],
           ),
-
-          //Productos destacados
-          _buildFeaturedProducts(),
-        ],
-       ),
-     ),
+        ),
       ),
       bottomNavigationBar: _buildBottomNavigationBar(),
     );
@@ -257,82 +268,83 @@ class _MyHomePageState extends State<MyHomePage> {
       height: 110,
       child: ListView(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 12), //espacio igual entre elementos
+        padding: const EdgeInsets.symmetric(
+          horizontal: 12,
+        ), //espacio igual entre elementos
         children: categories.map((category) {
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 6),
             child: GestureDetector(
-            onTap: () {
-              //logica para navegar a la pantalla de productos de esta categoría
-              _showCategorProducts(context, category['nombre'] as String);
-            },
-            child: SizedBox(
-              width: 80,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    width: 60,
-                    height: 60,
-                    decoration: BoxDecoration(
-                      color: (category['color'] as Color).withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(30),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.2),
-                          blurRadius: 4,
-                          offset: const Offset(
-                            0,
-                            2,
-                          ), // changes position of shadow
+              onTap: () {
+                //logica para navegar a la pantalla de productos de esta categoría
+                _showCategorProducts(context, category['nombre'] as String);
+              },
+              child: SizedBox(
+                width: 80,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 60,
+                      height: 60,
+                      decoration: BoxDecoration(
+                        color: (category['color'] as Color).withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(30),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.2),
+                            blurRadius: 4,
+                            offset: const Offset(
+                              0,
+                              2,
+                            ), // changes position of shadow
+                          ),
+                        ],
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(30),
+                        child: Image.asset(
+                          category['imagen'] as String,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            //si la imagen no existe mostrar un icono
+                            return Container(
+                              color: (category['color'] as Color).withOpacity(
+                                0.1,
+                              ),
+                              child: Icon(
+                                category['icon'] as IconData,
+                                size: 50,
+                                color: category['color'] as Color,
+                              ),
+                            );
+                          },
                         ),
-                      ],
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(30),
-                      child: Image.asset(
-                        category['imagen'] as String,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          //si la imagen no existe mostrar un icono
-                          return Container(
-                            color: (category['color'] as Color).withOpacity(
-                              0.1,
-                            ),
-                            child: Icon(
-                              category['icon'] as IconData,
-                              size: 50,
-                              color: category['color'] as Color,
-                            ),
-                          );
-                        },
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    category['nombre'] as String,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
+                    const SizedBox(height: 6),
+                    Text(
+                      category['nombre'] as String,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      textAlign: TextAlign.center,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    textAlign: TextAlign.center,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
             ),
           );
         }).toList(),
       ),
-     );
+    );
   }
 
   //tiendas destacadas
   Widget _buildFeaturedShops() {
-
     return FutureBuilder<List<Shop>>(
       future: ShopServices().getFeaturedShops(),
       builder: (context, snapshot) {
