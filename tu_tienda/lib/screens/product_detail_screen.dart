@@ -224,7 +224,7 @@ cart.addToCart(product);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('${product.name} añadido al carrito'),
-        duration: const Duration(seconds: 2),
+        duration: const Duration(seconds: 1),
         action: SnackBarAction(
           label: 'Ver carrito',
           onPressed: () {

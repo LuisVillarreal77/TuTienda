@@ -83,6 +83,13 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
 
           IconButton(
+            icon: const Icon(Icons.receipt_long),
+            onPressed: () {
+              Navigator.pushNamed(context, '/orders');
+            },
+          ),
+
+          IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () async {
               await FirebaseAuth.instance.signOut();
@@ -178,7 +185,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
 
             //overlay de color oscuro para mejorar la legibilidad del texto
-            Container(color: Colors.black.withOpacity(0.3)),
+            Container(color: Colors.black.withValues(alpha: 0.3)),
 
             //contenido del banner
             Positioned(
@@ -288,11 +295,11 @@ class _MyHomePageState extends State<MyHomePage> {
                       width: 60,
                       height: 60,
                       decoration: BoxDecoration(
-                        color: (category['color'] as Color).withOpacity(0.1),
+                        color: (category['color'] as Color).withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(30),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.grey.withOpacity(0.2),
+                            color: Colors.grey.withValues(alpha: 0.2),
                             blurRadius: 4,
                             offset: const Offset(
                               0,
@@ -309,9 +316,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           errorBuilder: (context, error, stackTrace) {
                             //si la imagen no existe mostrar un icono
                             return Container(
-                              color: (category['color'] as Color).withOpacity(
-                                0.1,
-                              ),
+                              color: (category['color'] as Color).withValues(alpha:0.1),
                               child: Icon(
                                 category['icon'] as IconData,
                                 size: 50,
