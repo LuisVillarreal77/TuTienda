@@ -82,12 +82,6 @@ class _MyHomePageState extends State<MyHomePage> {
             },
           ),
 
-          IconButton(
-            icon: const Icon(Icons.receipt_long),
-            onPressed: () {
-              Navigator.pushNamed(context, '/orders');
-            },
-          ),
 
           IconButton(
             icon: const Icon(Icons.logout),
@@ -233,42 +227,31 @@ class _MyHomePageState extends State<MyHomePage> {
   //Sección de categorías
   Widget _buildCategoriesSection() {
     final List<Map<String, dynamic>> categories = [
+     
       {
-        'icon': Icons.brush,
-        'nombre': 'Pintura',
-        'color': Colors.blue,
-        'imagen': 'assets/categories/pintura.jpg',
-      },
-      {
-        'icon': Icons.celebration,
-        'nombre': 'Textil',
-        'color': Colors.pink,
-        'imagen': 'assets/categories/textil.png',
-      },
-      {
-        'icon': Icons.kitchen,
-        'nombre': 'Ceramica',
-        'color': Colors.orange,
-        'imagen': 'assets/categories/ceramica.jpg',
-      },
-      {
-        'icon': Icons.diamond,
-        'nombre': 'Joyería',
-        'color': Colors.purple,
-        'imagen': 'assets/images/categories/joyeria.jpg',
-      },
-      {
-        'icon': Icons.local_florist,
-        'nombre': 'Decoración',
-        'color': Colors.green,
-        'imagen': 'assets/images/categories/decoracion.jpg',
-      },
-      {
-        'icon': Icons.shop,
-        'nombre': 'Tiendas',
-        'color': Colors.red,
-        'imagen': 'assets/images/categories/tiendas.jpg',
-      },
+    'icon': Icons.diamond,
+    'nombre': 'Joyería',
+    'color': Colors.purple,
+    'imagen': 'assets/images/categories/joyeria.jpg',
+  },
+  {
+    'icon': Icons.category_sharp,
+    'nombre': 'Tejidos',
+    'color': Colors.brown,
+    'imagen': 'assets/images/categories/tejidos.jpg',
+  },
+  {
+    'icon': Icons.home,
+    'nombre': 'Hogar',
+    'color': Colors.blue,
+    'imagen': 'assets/images/categories/hogar.jpg',
+  },
+  {
+    'icon': Icons.auto_awesome,
+    'nombre': 'Decoración',
+    'color': Colors.green,
+    'imagen': 'assets/images/categories/decoracion.jpg',
+  },
     ];
 
     return SizedBox(
@@ -295,7 +278,9 @@ class _MyHomePageState extends State<MyHomePage> {
                       width: 60,
                       height: 60,
                       decoration: BoxDecoration(
-                        color: (category['color'] as Color).withValues(alpha: 0.1),
+                        color: (category['color'] as Color).withValues(
+                          alpha: 0.1,
+                        ),
                         borderRadius: BorderRadius.circular(30),
                         boxShadow: [
                           BoxShadow(
@@ -316,7 +301,9 @@ class _MyHomePageState extends State<MyHomePage> {
                           errorBuilder: (context, error, stackTrace) {
                             //si la imagen no existe mostrar un icono
                             return Container(
-                              color: (category['color'] as Color).withValues(alpha:0.1),
+                              color: (category['color'] as Color).withValues(
+                                alpha: 0.1,
+                              ),
                               child: Icon(
                                 category['icon'] as IconData,
                                 size: 50,
@@ -450,11 +437,7 @@ class _MyHomePageState extends State<MyHomePage> {
         BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Inicio'),
         BottomNavigationBarItem(icon: Icon(Icons.explore), label: 'Explorar'),
         BottomNavigationBarItem(icon: Icon(Icons.favorite), label: 'Favoritos'),
-        BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Perfil'),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.shopping_cart),
-          label: 'Carrito',
-        ),
+        BottomNavigationBarItem(icon: Icon(Icons.receipt_long), label: 'Pedidos'),
       ],
       onTap: (index) {
         setState(() {
@@ -490,11 +473,11 @@ class _MyHomePageState extends State<MyHomePage> {
         // Puedes implementar esta pantalla después
         print('Navegando a Favoritos');
         break;
-      case 3: // Perfil
+      case 3: // Pedidos // Navegar a la pantalla de pedidos
         // Puedes implementar esta pantalla después
-        print('Navegando a Perfil');
+        Navigator.pushNamed(context, '/orders');
         break;
-      case 4: // Carrito ← ¡ESTE ES EL IMPORTANTE!
+      case 4: // Carrito // Navegar a la pantalla del carrito
         Navigator.pushNamed(context, '/cart');
 
         break;
