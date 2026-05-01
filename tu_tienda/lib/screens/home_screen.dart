@@ -487,11 +487,9 @@ class _MyHomePageState extends State<MyHomePage> {
       case 3: // Pedidos // Navegar a la pantalla de pedidos
         // Puedes implementar esta pantalla después
         Navigator.pushNamed(context, '/orders');
-        print('Navegando a Pedidos');
         break;
       case 4: // Carrito // Navegar a la pantalla del carrito
         Navigator.pushNamed(context, '/cart');
-        print('Navegando a Carrito');
         break;
     }
   }
