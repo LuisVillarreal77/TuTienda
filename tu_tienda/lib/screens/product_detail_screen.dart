@@ -97,6 +97,21 @@ class ProductDetailScreen extends StatelessWidget {
                     ),
                   ),
 
+                  const SizedBox(height: 8),
+
+                  Row(children: [
+                    const Icon(Icons.store, size: 18, color: Colors.deepOrangeAccent),
+                    const SizedBox(width: 6),
+                    Text("Vendido por: ${product.shopName}",
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.deepOrange[400],
+                      fontWeight: FontWeight.w500,
+                     ),
+                    ),
+                  ],
+                  ),
+
                   //Rating y precio
                   const SizedBox(height: 16),
                   Row(

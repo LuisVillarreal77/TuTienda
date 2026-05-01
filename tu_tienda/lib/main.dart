@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:tu_tienda/models/product.dart';
+import 'package:tu_tienda/screens/product_detail_screen.dart';
 import 'package:tu_tienda/screens/register_screen.dart';
+import 'package:tu_tienda/screens/shop_screen.dart';
 import 'screens/splash_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/login_screen.dart';
@@ -36,6 +39,14 @@ class MyApp extends StatelessWidget {
         '/cart': (context) => const CartScreen(),
         '/register': (context) => const RegisterScreen(),
         '/orders': (context) => const OrdersScreen(),
+        '/productDetail': (context) {
+          final product = ModalRoute.of(context)!.settings.arguments as Product;
+          return ProductDetailScreen(product: product);
+        },
+        '/shop': (context) {
+          final shopId = ModalRoute.of(context)!.settings.arguments as String;
+          return ShopScreen(shopId: shopId);
+        },
       },
       debugShowCheckedModeBanner: false, //quita la etiqueta de debug
     );
