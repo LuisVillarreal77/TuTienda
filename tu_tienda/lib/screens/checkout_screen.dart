@@ -12,7 +12,8 @@ class CheckoutScreen extends StatelessWidget {
     final cart = Provider.of<CartProvider>(context);
     final cartItems = cart.cartItems;
 
-    double total = cartItems.fold(0.0, (sum, item) => sum + item.price);
+    double totalProducts = cartItems.fold(0.0, (sum, item) => sum + item.price);
+    double total = cartItems.fold(0.0, (sum, item) => sum + item.price) + 15000;
 
     return Scaffold(
       appBar: AppBar(title: const Text("Resumen de compra")),
@@ -41,6 +42,38 @@ class CheckoutScreen extends StatelessWidget {
                     );
                   },
                 ),
+              ),
+
+              const Divider(),
+               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('Productos: ', style: TextStyle(fontSize: 18)),
+                  Text(
+                    '\$${totalProducts.toStringAsFixed(0)}',
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.deepOrange,
+                    ),
+                  ),
+                ],
+              ),
+
+              const Divider(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('Envio: ', style: TextStyle(fontSize: 18)),
+                  Text(
+                    '\$15000',
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.deepOrange,
+                    ),
+                  ),
+                ],
               ),
 
               const Divider(),

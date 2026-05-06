@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:tu_tienda/models/product.dart';
+import 'package:tu_tienda/screens/create_shop.dart';
 import 'package:tu_tienda/screens/product_detail_screen.dart';
 import 'package:tu_tienda/screens/register_screen.dart';
+import 'package:tu_tienda/screens/seller_dashboard_screen.dart';
 import 'package:tu_tienda/screens/shop_screen.dart';
 import 'screens/splash_screen.dart';
 import 'screens/home_screen.dart';
@@ -36,7 +38,9 @@ class MyApp extends StatelessWidget {
       routes: {
         '/login': (context) => const LoginScreen(), //Pantalla de login
         '/home': (context) => const MyHomePage(), //Tu pantalla principal
+        '/createShop': (context) => const CreateShopScreen(),
         '/cart': (context) => const CartScreen(),
+        '/sellerDashboard': (context) => SellerDashboardScreen(),
         '/register': (context) => const RegisterScreen(),
         '/orders': (context) => const OrdersScreen(),
         '/productDetail': (context) {

@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -123,16 +124,16 @@ class _LoginScreenState extends State<LoginScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                 child: loading
-                  ? const CircularProgressIndicator(color: Colors.white)
-                  : const Text(
-                   'Iniciar Sesión',
-                  style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                   ),
-                 ),
+                  child: loading
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : const Text(
+                          'Iniciar Sesión',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
                 ),
               ),
 
@@ -170,50 +171,100 @@ class _LoginScreenState extends State<LoginScreen> {
 
   //Funcion para simular el login
   void _login(BuildContext context) async {
-  final email = _emailController.text.trim();
-  final password = _passwordController.text.trim();
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
 
-  // Activar loading
-  setState(() => loading = true);
+    // Activar loading
+    setState(() => loading = true);
 
-  // Validaciones
-  if (email.isEmpty || password.isEmpty) {
-    setState(() => loading = false);
-    _showError(context, 'Por favor, completa todos los campos.');
-    return;
-  }
-
-  if (!email.contains('@')) {
-    setState(() => loading = false);
-    _showError(context, 'Correo electrónico inválido.');
-    return;
-  }
-
-  try {
-    await FirebaseAuth.instance.signInWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
-
-    Navigator.pushReplacementNamed(context, '/home');
-
-  } on FirebaseAuthException catch (e) {
-    String message = "Error al iniciar sesión";
-
-    if (e.code == 'user-not-found') {
-      message = "Usuario no encontrado";
-    } else if (e.code == 'wrong-password') {
-      message = "Contraseña incorrecta";
-    } else if (e.code == 'invalid-email') {
-      message = "Correo inválido";
+    // Validaciones
+    if (email.isEmpty || password.isEmpty) {
+      setState(() => loading = false);
+      _showError(context, 'Por favor, completa todos los campos.');
+      return;
     }
 
-    _showError(context, message);
+    if (!email.contains('@')) {
+      setState(() => loading = false);
+      _showError(context, 'Correo electrónico inválido.');
+      return;
+    }
+
+    try {
+      final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      final user = credential.user;
+
+      if (user != null) {
+        await _redirectUser(user);
+      }
+      
+    } on FirebaseAuthException catch (e) {
+      String message = "Error al iniciar sesión";
+
+      if (e.code == 'user-not-found') {
+        message = "Usuario no encontrado";
+      } else if (e.code == 'wrong-password') {
+        message = "Contraseña incorrecta";
+      } else if (e.code == 'invalid-email') {
+        message = "Correo inválido";
+      }
+
+      _showError(context, message);
+    }
+
+    // Desactivar loading
+    setState(() => loading = false);
   }
 
-  // Desactivar loading
-  setState(() => loading = false);
+  Future<void> _redirectUser(User user) async {
+  try {
+    // 1. Obtener datos del usuario
+    final userDoc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .get();
+
+    if (!userDoc.exists) {
+      Navigator.pushReplacementNamed(context, '/home');
+      return;
+    }
+
+    final role = userDoc['role'].toString().toLowerCase();
+
+    // 2. Si es buyer → home
+    if (role == 'buyer') {
+      Navigator.pushReplacementNamed(context, '/home');
+      return;
+    }
+
+    // 3. Si es seller → validar tienda
+    if (role == 'seller') {
+      final shopQuery = await FirebaseFirestore.instance
+          .collection('shops')
+          .where('ownerId', isEqualTo: user.uid)
+          .limit(1)
+          .get();
+
+      //si no tiene tienda
+      if (shopQuery.docs.isEmpty) {
+        Navigator.pushReplacementNamed(context, '/createShop');
+      } 
+      // si ya tiene tienda
+      else {
+        Navigator.pushReplacementNamed(context, '/sellerDashboard');
+      }
+    }
+
+  } catch (e) {
+    print("ERROR REDIRECCIÓN: $e");
+    _showError(context, "Error al cargar datos del usuario");
+  }
 }
+
   void _showError(BuildContext context, String message) {
     showDialog(
       context: context,
