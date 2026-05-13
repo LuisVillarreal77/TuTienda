@@ -9,11 +9,12 @@ import 'screens/splash_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/cart_screen.dart';
+import 'screens/orders_screen.dart';
+import 'package:tu_tienda/admin/screnns/security_dashboard_screen.dart';
 import 'package:provider/provider.dart';
 import 'providers/cart_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-import 'screens/orders_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -36,12 +37,13 @@ class MyApp extends StatelessWidget {
       home: const SplashScreen(),
       //definimos las rutas de navegacion
       routes: {
-        '/login': (context) => const LoginScreen(), //Pantalla de login
+        '/login': (context) => const LoginScreen(),
+        '/register': (context) => const RegisterScreen(),
+        '/securityDashboard': (context) => const SecurityDashboardScreen(), 
+        '/createShop': (context) => const CreateShopScreen(),//Pantalla de login
         '/home': (context) => const MyHomePage(), //Tu pantalla principal
-        '/createShop': (context) => const CreateShopScreen(),
         '/cart': (context) => const CartScreen(),
         '/sellerDashboard': (context) => SellerDashboardScreen(),
-        '/register': (context) => const RegisterScreen(),
         '/orders': (context) => const OrdersScreen(),
         '/productDetail': (context) {
           final product = ModalRoute.of(context)!.settings.arguments as Product;

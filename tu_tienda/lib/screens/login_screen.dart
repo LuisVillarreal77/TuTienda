@@ -201,7 +201,6 @@ class _LoginScreenState extends State<LoginScreen> {
       if (user != null) {
         await _redirectUser(user);
       }
-      
     } on FirebaseAuthException catch (e) {
       String message = "Error al iniciar sesión";
 
@@ -221,49 +220,62 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _redirectUser(User user) async {
-  try {
-    // 1. Obtener datos del usuario
-    final userDoc = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(user.uid)
-        .get();
-
-    if (!userDoc.exists) {
-      Navigator.pushReplacementNamed(context, '/home');
-      return;
-    }
-
-    final role = userDoc['role'].toString().toLowerCase();
-
-    // 2. Si es buyer → home
-    if (role == 'buyer') {
-      Navigator.pushReplacementNamed(context, '/home');
-      return;
-    }
-
-    // 3. Si es seller → validar tienda
-    if (role == 'seller') {
-      final shopQuery = await FirebaseFirestore.instance
-          .collection('shops')
-          .where('ownerId', isEqualTo: user.uid)
-          .limit(1)
+    try {
+      // 1. Obtener datos del usuario
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
           .get();
 
-      //si no tiene tienda
-      if (shopQuery.docs.isEmpty) {
-        Navigator.pushReplacementNamed(context, '/createShop');
-      } 
-      // si ya tiene tienda
-      else {
-        Navigator.pushReplacementNamed(context, '/sellerDashboard');
+      if (!userDoc.exists) {
+        Navigator.pushReplacementNamed(context, '/home');
+        return;
       }
-    }
 
-  } catch (e) {
-    print("ERROR REDIRECCIÓN: $e");
-    _showError(context, "Error al cargar datos del usuario");
+      final role = userDoc['role'].toString().toLowerCase();
+      final status = userDoc.data()?['status'] ?? 'active';
+      
+      //Cuentas Bloqueadas
+      if (status == 'blocked') {
+        await FirebaseAuth.instance.signOut();
+
+        _showError(context, 'Tu cuenta ha sido bloqueada');
+        return;
+      }
+      // Cuenta del administrador -> securityDashboard
+      if (role == 'admin') {
+        Navigator.pushReplacementNamed(context, '/securityDashboard');
+        return;
+      }
+
+      //Si es buyer -> home
+      if (role == 'buyer') {
+        Navigator.pushReplacementNamed(context, '/home');
+        return;
+      }
+
+      // Si es seller → validar tienda
+      if (role == 'seller') {
+        final shopQuery = await FirebaseFirestore.instance
+            .collection('shops')
+            .where('ownerId', isEqualTo: user.uid)
+            .limit(1)
+            .get();
+
+        //si no tiene tienda
+        if (shopQuery.docs.isEmpty) {
+          Navigator.pushReplacementNamed(context, '/createShop');
+        }
+        // si ya tiene tienda
+        else {
+          Navigator.pushReplacementNamed(context, '/sellerDashboard');
+        }
+      }
+    } catch (e) {
+      print("ERROR REDIRECCIÓN: $e");
+      _showError(context, "Error al cargar datos del usuario");
+    }
   }
-}
 
   void _showError(BuildContext context, String message) {
     showDialog(
