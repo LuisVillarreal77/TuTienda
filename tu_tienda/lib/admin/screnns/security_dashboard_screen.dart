@@ -71,6 +71,85 @@ class _SecurityDashboardScreenState extends State<SecurityDashboardScreen> {
 
             const SizedBox(height: 16),
 
+            GestureDetector(
+  onTap: () {
+    Navigator.pushNamed(context, '/loginStats');
+  },
+  child: Container(
+    width: double.infinity,
+    padding: const EdgeInsets.all(18),
+    margin: const EdgeInsets.symmetric(vertical: 10),
+    decoration: BoxDecoration(
+      color: Colors.deepOrange[400],
+      borderRadius: BorderRadius.circular(18),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.15),
+          blurRadius: 8,
+          offset: const Offset(0, 4),
+        ),
+      ],
+    ),
+    child: Row(
+      children: [
+
+        // Ícono
+        Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.2),
+            borderRadius: BorderRadius.circular(14),
+          ),
+          child: const Icon(
+            Icons.bar_chart,
+            color: Colors.white,
+            size: 30,
+          ),
+        ),
+
+        const SizedBox(width: 16),
+
+        // Texto
+        const Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+
+              Text(
+                "Estadísticas de Login",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+
+              SizedBox(height: 4),
+
+              Text(
+                "Visualiza intentos exitosos y fallidos",
+                style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 13,
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        // Flecha
+        const Icon(
+          Icons.arrow_forward_ios,
+          color: Colors.white,
+          size: 18,
+        ),
+      ],
+    ),
+  ),
+),
+
+             const SizedBox(height: 16),
+
             //CARDS DE ESTADISTICAS
             Row(
               children: [
@@ -91,6 +170,8 @@ class _SecurityDashboardScreenState extends State<SecurityDashboardScreen> {
                   value: productsCount.toString(),
                   icon: Icons.shopping_bag,
                 ),
+
+                
               ],
             ),
 
@@ -174,7 +255,7 @@ class _SecurityDashboardScreenState extends State<SecurityDashboardScreen> {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                   content: Text(
-                                    'No puedes eliminar administradores',
+                                    'No puedes bloquear administradores',
                                   ),
                                 ),
                               );

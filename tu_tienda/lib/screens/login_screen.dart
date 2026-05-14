@@ -30,6 +30,7 @@ class _LoginScreenState extends State<LoginScreen> {
             children: [
               const SizedBox(height: 80),
               Image.asset('assets/logo_tu_tienda.png', width: 100, height: 100),
+
               // Título
               const SizedBox(height: 20),
               Text(
@@ -48,6 +49,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 'Inicia sesión para continuar',
                 style: TextStyle(fontSize: 16, color: Colors.brown[600]),
               ),
+
               const SizedBox(height: 40),
 
               // Campo de correo electrónico
@@ -66,6 +68,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
 
               const SizedBox(height: 20),
+
               // Campo de contraseña
               TextField(
                 controller: _passwordController,
@@ -138,6 +141,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
 
               const SizedBox(height: 20),
+
               // Botón de registro
               SizedBox(
                 width: double.infinity,
@@ -169,9 +173,10 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  //Funcion para simular el login
+  //Funcion para login
   void _login(BuildContext context) async {
-    final email = _emailController.text.trim();
+    final email = _emailController.text.trim().toLowerCase();
+
     final password = _passwordController.text.trim();
 
     // Activar loading
@@ -180,12 +185,14 @@ class _LoginScreenState extends State<LoginScreen> {
     // Validaciones
     if (email.isEmpty || password.isEmpty) {
       setState(() => loading = false);
+
       _showError(context, 'Por favor, completa todos los campos.');
       return;
     }
 
     if (!email.contains('@')) {
       setState(() => loading = false);
+
       _showError(context, 'Correo electrónico inválido.');
       return;
     }
@@ -199,15 +206,47 @@ class _LoginScreenState extends State<LoginScreen> {
       final user = credential.user;
 
       if (user != null) {
+        // Incrementar login exitoso
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .update({'loginSuccess': FieldValue.increment(1)});
+
+        // Registrar log exitoso
+        await FirebaseFirestore.instance.collection('login_logs').add({
+          'email': email,
+          'status': 'success',
+          'timestamp': FieldValue.serverTimestamp(),
+        });
+
         await _redirectUser(user);
       }
     } on FirebaseAuthException catch (e) {
+      print("FIREBASE LOGIN ERROR: ${e.code}");
+
+      await FirebaseFirestore.instance.collection('login_logs').add({
+        'email': email,
+        'status': 'failed',
+        'errorCode': e.code,
+        'timestamp': FieldValue.serverTimestamp(),
+      });
+
       String message = "Error al iniciar sesión";
+
+      // Registrar fallo en colección separada
+      try {
+        await FirebaseFirestore.instance.collection('login_logs').add({
+          'email': email,
+          'status': 'failed',
+          'errorCode': e.code,
+          'timestamp': FieldValue.serverTimestamp(),
+        });
+      } catch (_) {}
 
       if (e.code == 'user-not-found') {
         message = "Usuario no encontrado";
-      } else if (e.code == 'wrong-password') {
-        message = "Contraseña incorrecta";
+      } else if (e.code == 'wrong-password' || e.code == 'invalid-credential') {
+        message = "Correo o contraseña incorrectos";
       } else if (e.code == 'invalid-email') {
         message = "Correo inválido";
       }
@@ -233,28 +272,30 @@ class _LoginScreenState extends State<LoginScreen> {
       }
 
       final role = userDoc['role'].toString().toLowerCase();
+
       final status = userDoc.data()?['status'] ?? 'active';
-      
-      //Cuentas Bloqueadas
+
+      // Cuentas bloqueadas
       if (status == 'blocked') {
         await FirebaseAuth.instance.signOut();
 
         _showError(context, 'Tu cuenta ha sido bloqueada');
         return;
       }
-      // Cuenta del administrador -> securityDashboard
+
+      // Cuenta del administrador
       if (role == 'admin') {
         Navigator.pushReplacementNamed(context, '/securityDashboard');
         return;
       }
 
-      //Si es buyer -> home
+      // Buyer
       if (role == 'buyer') {
         Navigator.pushReplacementNamed(context, '/home');
         return;
       }
 
-      // Si es seller → validar tienda
+      // Seller
       if (role == 'seller') {
         final shopQuery = await FirebaseFirestore.instance
             .collection('shops')
@@ -262,17 +303,17 @@ class _LoginScreenState extends State<LoginScreen> {
             .limit(1)
             .get();
 
-        //si no tiene tienda
+        // Si no tiene tienda
         if (shopQuery.docs.isEmpty) {
           Navigator.pushReplacementNamed(context, '/createShop');
-        }
-        // si ya tiene tienda
-        else {
+        } else {
+          // Si ya tiene tienda
           Navigator.pushReplacementNamed(context, '/sellerDashboard');
         }
       }
     } catch (e) {
       print("ERROR REDIRECCIÓN: $e");
+
       _showError(context, "Error al cargar datos del usuario");
     }
   }
