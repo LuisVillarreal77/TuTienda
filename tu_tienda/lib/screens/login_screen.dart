@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:tu_tienda/admin/services/telemetry_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -203,7 +204,14 @@ class _LoginScreenState extends State<LoginScreen> {
         password: password,
       );
 
-      final user = credential.user;
+        final user2 = FirebaseAuth.instance.currentUser;
+
+       TelemetryService.sendEvent(
+            eventType: 'login_success',
+            details: 'Usuario: ${user2?.email ?? "desconocido"} inicio sesión',
+          );
+
+       final user = credential.user;
 
       if (user != null) {
         // Incrementar login exitoso
@@ -252,6 +260,14 @@ class _LoginScreenState extends State<LoginScreen> {
       }
 
       _showError(context, message);
+
+      //Evento telemetrico
+      //final user = FirebaseAuth.instance.currentUser;
+
+      TelemetryService.sendEvent(
+  eventType: 'login_failed',
+  details: 'Intento fallido de inicio de sesión para $email',
+);
     }
 
     // Desactivar loading

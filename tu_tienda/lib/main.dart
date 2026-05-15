@@ -16,10 +16,13 @@ import 'package:provider/provider.dart';
 import 'providers/cart_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'package:tu_tienda/admin/services/telemetry_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  TelemetryService.connect();
 
   runApp(
     ChangeNotifierProvider(create: (_) => CartProvider(), child: const MyApp()),
@@ -41,8 +44,9 @@ class MyApp extends StatelessWidget {
         '/login': (context) => const LoginScreen(),
         '/register': (context) => const RegisterScreen(),
         '/securityDashboard': (context) => const SecurityDashboardScreen(),
-        '/loginStats': (context) => const LoginStatsScreen(), 
-        '/createShop': (context) => const CreateShopScreen(),//Pantalla de login
+        '/loginStats': (context) => const LoginStatsScreen(),
+        '/createShop': (context) =>
+            const CreateShopScreen(), //Pantalla de login
         '/home': (context) => const MyHomePage(), //Tu pantalla principal
         '/cart': (context) => const CartScreen(),
         '/sellerDashboard': (context) => SellerDashboardScreen(),

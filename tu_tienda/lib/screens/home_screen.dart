@@ -9,6 +9,7 @@ import '../widgets/product_card.dart';
 import '../models/shop.dart';
 import '../services/shop_services.dart';
 import '../widgets/shop_card.dart';
+import 'package:tu_tienda/admin/services/telemetry_service.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -85,6 +86,12 @@ class _MyHomePageState extends State<MyHomePage> {
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () async {
+
+              final user = FirebaseAuth.instance.currentUser;
+              TelemetryService.sendEvent(
+                eventType: 'logout',
+                details: 'Usuario: ${user?.email ?? "desconocido"} cerró sesión',
+              );
               await FirebaseAuth.instance.signOut();
               Navigator.pushReplacementNamed(context, '/login');
             },

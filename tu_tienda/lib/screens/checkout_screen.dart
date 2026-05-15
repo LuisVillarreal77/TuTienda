@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../providers/cart_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:tu_tienda/admin/services/telemetry_service.dart';
 
 class CheckoutScreen extends StatelessWidget {
   const CheckoutScreen({super.key});
@@ -117,6 +118,7 @@ class CheckoutScreen extends StatelessWidget {
   }
 
   void _confirmOrder(BuildContext context, CartProvider cart) async {
+    
     final user = FirebaseAuth.instance.currentUser;
 
     if (user == null) {
@@ -125,6 +127,11 @@ class CheckoutScreen extends StatelessWidget {
       ).showSnackBar(const SnackBar(content: Text("Debes iniciar sesión")));
       return;
     }
+
+       TelemetryService.sendEvent(
+          eventType: 'purchase_confirmed',
+          details: 'Usuario ${user.email} confirmó un pedido',
+        );
 
     try {
       final order = {

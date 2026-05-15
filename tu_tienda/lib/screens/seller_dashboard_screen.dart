@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:tu_tienda/admin/services/telemetry_service.dart';
 
 class SellerDashboardScreen extends StatelessWidget {
   const SellerDashboardScreen({super.key});
@@ -44,6 +45,12 @@ class SellerDashboardScreen extends StatelessWidget {
   }
 
   Future<void> _logout(BuildContext context) async {
+    final user = FirebaseAuth.instance.currentUser;
+    TelemetryService.sendEvent(
+  eventType: 'logout',
+  details: 'Usuario ${user?.email ?? "desconocido"} cerró sesión',
+);
+
     await FirebaseAuth.instance.signOut();
 
     Navigator.pushNamedAndRemoveUntil(

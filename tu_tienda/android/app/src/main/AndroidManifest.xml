@@ -1,8 +1,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+
     <application
         android:label="tu_tienda"
         android:name="${applicationName}"
-        android:icon="@mipmap/logo_tu_tienda">
+        android:icon="@mipmap/logo_tu_tienda"
+        android:usesCleartextTraffic="true">
         <activity
             android:name=".MainActivity"
             android:exported="true"
