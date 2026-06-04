@@ -48,6 +48,9 @@ class _CreateShopScreenState extends State<CreateShopScreen> {
         "imageUrl": "agregar imagen",
         "ownerId": user.uid,
         "rating": 0,
+        "totalProducts": 0,
+        "totalOrders": 0,
+        "isActive": true,
         "createdAt": FieldValue.serverTimestamp(),        
       });
 

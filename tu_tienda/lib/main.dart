@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tu_tienda/admin/screnns/login_stats_screen.dart';
 import 'package:tu_tienda/models/product.dart';
+import 'package:tu_tienda/screens/create_product_screen.dart';
 import 'package:tu_tienda/screens/create_shop.dart';
 import 'package:tu_tienda/screens/product_detail_screen.dart';
 import 'package:tu_tienda/screens/register_screen.dart';
@@ -17,6 +18,7 @@ import 'providers/cart_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:tu_tienda/admin/services/telemetry_service.dart';
+import 'package:tu_tienda/screens/edit_product_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -42,15 +44,20 @@ class MyApp extends StatelessWidget {
       //definimos las rutas de navegacion
       routes: {
         '/login': (context) => const LoginScreen(),
+        '/home': (context) => const MyHomePage(), //Tu pantalla principal
         '/register': (context) => const RegisterScreen(),
         '/securityDashboard': (context) => const SecurityDashboardScreen(),
         '/loginStats': (context) => const LoginStatsScreen(),
-        '/createShop': (context) =>
-            const CreateShopScreen(), //Pantalla de login
-        '/home': (context) => const MyHomePage(), //Tu pantalla principal
+        '/createShop': (context) =>const CreateShopScreen(),
         '/cart': (context) => const CartScreen(),
         '/sellerDashboard': (context) => SellerDashboardScreen(),
-        '/orders': (context) => const OrdersScreen(),
+        '/orders': (context) => const OrdersScreen(), //Pantalla de login
+        '/createProduct': (context) => const CreateProductScreen(),
+        '/editProduct': (context) {
+          final productId = ModalRoute.of(context)!.settings.arguments as String;
+          return EditProductScreen(productId: productId);
+        },
+        
         '/productDetail': (context) {
           final product = ModalRoute.of(context)!.settings.arguments as Product;
           return ProductDetailScreen(product: product);

@@ -8,6 +8,7 @@ class Product {
   final double rating;
   final String shopId;
   final String shopName;
+  final String sellerId;
 
   Product({
     required this.id,
@@ -19,6 +20,7 @@ class Product {
     required this.rating,
     required this.shopId,
     required this.shopName,
+    required this.sellerId,
   });
 
   factory Product.fromFirestore(String id, Map<String, dynamic> data) {
@@ -32,6 +34,7 @@ class Product {
       shopName: data['shopName'] ?? '',
       imageUrl: data['imageUrl'] ?? '',
       rating: (data['rating'] as num?)?.toDouble() ?? 0.0,
+      sellerId: data['sellerId'] ?? '',
     );
   }
 }
