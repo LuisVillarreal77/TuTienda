@@ -412,6 +412,8 @@ class _MyHomePageState extends State<MyHomePage> {
           return const Center(child: Text('No hay productos disponibles'));
         }
 
+        SizedBox (height: 16);
+
         final products = snapshot.data!;
 
         return GridView.builder(

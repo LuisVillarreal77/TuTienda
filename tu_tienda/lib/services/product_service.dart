@@ -8,8 +8,9 @@ class ProductService {
   Future<List<Product>> getPopularProducts() async {
     final snapshot = await _db
         .collection('products')
-        .where('popular', isEqualTo: true)
-        .limit(6)
+        .where('isActive', isEqualTo: true)
+        .orderBy('createdAt', descending: true)
+        .limit(20)
         .get();
 
     return snapshot.docs
@@ -22,6 +23,7 @@ class ProductService {
     final snapshot = await _db
         .collection('products')
         .where('shopId', isEqualTo: shopId)
+        .where('isActive', isEqualTo: true)
         .get();
 
     return snapshot.docs
