@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'order_detail_screen.dart';
 
 class OrdersScreen extends StatelessWidget {
   const OrdersScreen({super.key});
@@ -75,8 +76,25 @@ class OrdersScreen extends StatelessWidget {
                       Text("Total: \$${total.toStringAsFixed(0)}"),
                       Text("Productos: ${items.length}"),
                       Text("Fecha: $fecha"),
+                      Text(
+                        "Estado: ${data['status']}",
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.orange,
+                        ),
+                      ),
+                      
                     ],
                   ),
+                  onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  OrderDetailScreen(orderId: order.id),
+                            ),
+                          );
+                        },
                 ),
               );
             },

@@ -68,108 +68,136 @@ class ProductDetailScreen extends StatelessWidget {
           ),
         ],
       ),
-      body:
-      SafeArea(child: 
-       SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            //galeria de imagenes
-            _buildImageGallery(),
 
-            //Informacion del producto
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // categoria y nombre
-                  Text( 
-                    (product.category),
-                    style: TextStyle(color: Colors.grey[600], fontSize: 14),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    (product.name),
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              //galeria de imagenes
+              _buildImageGallery(),
+
+              //Informacion del producto
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // categoria y nombre
+                    Text(
+                      (product.category),
+                      style: TextStyle(color: Colors.grey[600], fontSize: 14),
                     ),
-                  ),
-
-                  const SizedBox(height: 8),
-
-                  Row(children: [
-                    const Icon(Icons.store, size: 18, color: Colors.deepOrangeAccent),
-                    const SizedBox(width: 6),
-                    Text("Vendido por: ${product.shopName}",
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.deepOrange[400],
-                      fontWeight: FontWeight.w500,
-                     ),
-                    ),
-                  ],
-                  ),
-
-                  //Rating y precio
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      _buildRatingStars(),
-                      const SizedBox(width: 8),
-                      Text(
-                        ('${product.rating}'),
-                        style: TextStyle(color: Colors.grey[600]),
+                    const SizedBox(height: 8),
+                    Text(
+                      (product.name),
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
                       ),
-                      const Spacer(),
-                      Text(
-                        ('\$${product.price}'),
-                        style: const TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.deepOrange,
+                    ),
+
+                    const SizedBox(height: 8),
+
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.store,
+                          size: 18,
+                          color: Colors.deepOrangeAccent,
                         ),
-                      ),
-                    ],
-                  ),
-
-                  //Descripcion
-                 const Text(
-                    'Descripcion',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    (product.description),
-                      style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey[700],
-                      height: 1.5,
+                        const SizedBox(width: 6),
+                        Text(
+                          "Vendido por: ${product.shopName}",
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.deepOrange[400],
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
+
+                    //Rating y precio
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        _buildRatingStars(),
+                        const SizedBox(width: 8),
+                        Text(
+                          ('${product.rating}'),
+                          style: TextStyle(color: Colors.grey[600]),
+                        ),
+                        const Spacer(),
+                        Text(
+                          ('\$${product.price}'),
+                          style: const TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.deepOrange,
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    //Descripcion
+                    const Text(
+                      'Descripcion',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      (product.description),
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey[700],
+                        height: 1.5,
+                      ),
+                    ),
                     const SizedBox(height: 24),
-                 
 
-                  //Especificaciones (se puede expandir esto)
-                  const SizedBox(height: 24),
-                  _buildProductSpecs(),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.inventory_2,
+                          size: 18,
+                          color: Colors.grey,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          product.stock > 0
+                              ? 'Disponibles: ${product.stock}'
+                              : 'Agotado',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: product.stock > 0
+                                ? Colors.green
+                                : Colors.red,
+                          ),
+                        ),
+                      ],
+                    ),
 
-                  //Productos relacionados
-                  const SizedBox(height: 32),
-                  _buildRelatedProducts(),
-                ],
+                    //Especificaciones (se puede expandir esto)
+                    const SizedBox(height: 24),
+                    _buildProductSpecs(),
+
+                    //Productos relacionados
+                    const SizedBox(height: 32),
+                    _buildRelatedProducts(),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
- ),
       //Barra inferior para añadir al carrito
-      bottomNavigationBar: SafeArea(
-        child:  _buildAddToCartBar(context),
-      ),
-     
+      bottomNavigationBar: SafeArea(child: _buildAddToCartBar(context)),
     );
   }
 
@@ -231,9 +259,31 @@ class ProductDetailScreen extends StatelessWidget {
 
   //funcion para añadir al carrito
   void _addToCart(BuildContext context) {
-    //añadir producto al carrito
-   final cart = Provider.of<CartProvider>(context, listen: false);
-cart.addToCart(product);
+    final cart = Provider.of<CartProvider>(context, listen: false);
+    
+    //Validar stock
+    if (product.stock <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Producto agotado"),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+   
+    final added = cart.addToCart(product);
+
+    //Stock maximo alcanzado
+    if (!added) {
+        ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("No hay más unidades disponibles"),
+        backgroundColor: Colors.red,
+      ),
+    );
+    return;
+    }
 
     //Mostrar mensaje de confirmacion
     ScaffoldMessenger.of(context).showSnackBar(
@@ -259,7 +309,7 @@ cart.addToCart(product);
       child: Stack(
         children: [
           //Imagen principal
-          Image.asset(
+          Image.network(
             (product.imageUrl),
             width: double.infinity,
             height: 300,
@@ -301,7 +351,7 @@ cart.addToCart(product);
 
   //Widget de estrellas de rating
   Widget _buildRatingStars() {
-    double rating = double.tryParse(product.rating.toString() ) ?? 0;
+    double rating = double.tryParse(product.rating.toString()) ?? 0;
 
     return Row(
       children: List.generate(5, (index) {

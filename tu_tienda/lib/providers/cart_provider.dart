@@ -1,45 +1,71 @@
 import 'package:flutter/foundation.dart';
 import '../models/product.dart';
+import '../models/cart_item.dart';
 
 class CartProvider extends ChangeNotifier {
-  //Lista de productos en el carrito
-  final List<Product> _cartItems = [];
+  final List<CartItem> _cartItems = [];
 
-  //Getter para acceder a los items
-  List<Product> get cartItems => _cartItems;
+  List<CartItem> get cartItems => _cartItems;
 
-  //Getter para obtener el total de items en el carrito
-  int get totalItems => _cartItems.length;
+  int get totalItems => _cartItems.fold(0, (sum, item) => sum + item.quantity);
 
-  //Método para agregar un producto al carrito
-  void addToCart(Product product) {
-      _cartItems.add(product);
-       notifyListeners();  // Notificar cambios en el carrito
+  double get totalPrice {
+  return _cartItems.fold(
+    0.0,
+    (sum, item) => sum + (item.product.price * item.quantity),
+  );
+}
 
-  }
+  bool addToCart(Product product) {
+    final index = _cartItems.indexWhere(
+      (item) => item.product.id == product.id,
+    );
 
-  //Método para eliminar un producto del carrito
-  void removeFromCart(int index) {
-    if (index >= 0 && index < _cartItems.length) {
-      _cartItems.removeAt(index);
-      notifyListeners();
+    if (index != -1) {
+      final cartItem = _cartItems[index];
+
+      if (cartItem.quantity >= product.stock) {
+        return false;
+      }
+
+      cartItem.quantity++;
+    } else {
+      if (product.stock <= 0) {
+        return false;
+      }
+
+      _cartItems.add(CartItem(product: product, quantity: 1));
     }
+
+    notifyListeners();
+    return true;
+  }
+  
+
+  void decreaseQuantity(String productId) {
+    final index = _cartItems.indexWhere((item) => item.product.id == productId);
+
+    if (index == -1) return;
+
+    if (_cartItems[index].quantity > 1) {
+      _cartItems[index].quantity--;
+    } else {
+      _cartItems.removeAt(index);
+    }
+
+    notifyListeners();
   }
 
-  // //actualizar la cantidad de un producto en el carrito
-  // void updateQuantity(int index, int newQuantity) {
-  //   if (index >= 0 && index < _cartItems.length && newQuantity > 0) {
-  //     _cartItems[index]['cantidad'] = newQuantity;
-  //     notifyListeners();
-  //   }
-  // }
+  //ELIMINAR PRODUCTO DEL CARRITO
+  void removeProduct(String productId) {
+    _cartItems.removeWhere((item) => item.product.id == productId);
 
-  //Vaciar el carrito
+    notifyListeners();
+  }
+
+  //VACIAR CARRITO
   void clearCart() {
     _cartItems.clear();
     notifyListeners();
   }
-
 }
-
-

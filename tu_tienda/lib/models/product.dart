@@ -6,6 +6,7 @@ class Product {
   final String imageUrl;
   final String category;
   final double rating;
+  final int stock;
   final String shopId;
   final String shopName;
   final String sellerId;
@@ -18,6 +19,7 @@ class Product {
     required this.imageUrl,
     required this.category,
     required this.rating,
+    required this.stock,
     required this.shopId,
     required this.shopName,
     required this.sellerId,
@@ -34,6 +36,7 @@ class Product {
       shopName: data['shopName'] ?? '',
       imageUrl: data['imageUrl'] ?? '',
       rating: (data['rating'] as num?)?.toDouble() ?? 0.0,
+      stock: data['stock'] ?? 0,
       sellerId: data['sellerId'] ?? '',
     );
   }

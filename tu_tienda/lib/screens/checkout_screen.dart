@@ -13,8 +13,8 @@ class CheckoutScreen extends StatelessWidget {
     final cart = Provider.of<CartProvider>(context);
     final cartItems = cart.cartItems;
 
-    double totalProducts = cartItems.fold(0.0, (sum, item) => sum + item.price);
-    double total = cartItems.fold(0.0, (sum, item) => sum + item.price) + 15000;
+    double totalProducts = cart.totalPrice;
+    double total = cart.totalPrice + 15000;
 
     return Scaffold(
       appBar: AppBar(title: const Text("Resumen de compra")),
@@ -29,24 +29,34 @@ class CheckoutScreen extends StatelessWidget {
                 child: ListView.builder(
                   itemCount: cartItems.length,
                   itemBuilder: (context, index) {
-                    final product = cartItems[index];
+                    final item = cartItems[index];
+                    final product = item.product;
 
                     return ListTile(
-                      leading: Image.asset(
+                      leading: Image.network(
                         product.imageUrl,
                         width: 50,
                         height: 50,
                         fit: BoxFit.cover,
                       ),
                       title: Text(product.name),
-                      subtitle: Text('\$${product.price}'),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Precio: \$${product.price}'),
+                          Text('Cantidad: ${item.quantity}'),
+                          Text(
+                            'Subtotal: \$${(product.price * item.quantity).toStringAsFixed(0)}',
+                          ),
+                        ],
+                      ),
                     );
                   },
                 ),
               ),
 
               const Divider(),
-               Row(
+              Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text('Productos: ', style: TextStyle(fontSize: 18)),
@@ -118,7 +128,6 @@ class CheckoutScreen extends StatelessWidget {
   }
 
   void _confirmOrder(BuildContext context, CartProvider cart) async {
-    
     final user = FirebaseAuth.instance.currentUser;
 
     if (user == null) {
@@ -128,32 +137,76 @@ class CheckoutScreen extends StatelessWidget {
       return;
     }
 
-       TelemetryService.sendEvent(
-          eventType: 'purchase_confirmed',
-          details: 'Usuario ${user.email} confirmó un pedido',
-        );
+    TelemetryService.sendEvent(
+      eventType: 'purchase_confirmed',
+      details: 'Usuario ${user.email} confirmó un pedido',
+    );
 
     try {
+      for (final item in cart.cartItems) {
+        final productDoc = await FirebaseFirestore.instance
+            .collection('products')
+            .doc(item.product.id)
+            .get();
+
+        if (!productDoc.exists) {
+          throw Exception('${item.product.name} ya no existe');
+        }
+
+        final currentStock = productDoc['stock'] ?? 0;
+
+        if (currentStock < item.quantity) {
+          throw Exception(
+            '${item.product.name} ya no tiene unidades disponibles',
+          );
+        }
+      }
+
+      final sellerStatuses = {};
+
+      for (final item in cart.cartItems) {
+        sellerStatuses[item.product.sellerId] = "pending";
+      }
+
       final order = {
         "userId": user.uid,
-        "total": cart.cartItems.fold(0.0, (sum, item) => sum + item.price * 1),
+        "userEmail": user.email,
+        "total": cart.totalPrice,
         "status": "pending",
         "createdAt": FieldValue.serverTimestamp(),
+
+        "sellerIds": cart.cartItems
+            .map((item) => item.product.sellerId)
+            .toSet()
+            .toList(),
+
+        "sellerStatuses": sellerStatuses,
+
         "items": cart.cartItems.map((item) {
           return {
-            "productId": item.id,
-            "name": item.name,
-            "price": item.price,
-            "quantity": 1,
-            "image": item.imageUrl,
-            "shopId": item.shopId,
-            "shopName": item.shopName,
-            "sellerId": item.sellerId,
+            "productId": item.product.id,
+            "name": item.product.name,
+            "price": item.product.price,
+            "quantity": item.quantity,
+            "image": item.product.imageUrl,
+            "shopId": item.product.shopId,
+            "shopName": item.product.shopName,
+            "sellerId": item.product.sellerId,
           };
         }).toList(),
       };
 
       await FirebaseFirestore.instance.collection('orders').add(order);
+
+      for (final item in cart.cartItems) {
+        final productRef = FirebaseFirestore.instance
+            .collection('products')
+            .doc(item.product.id);
+
+        await productRef.update({
+          'stock': FieldValue.increment(-item.quantity),
+        });
+      }
 
       //Limpiar carrito
       cart.clearCart();
@@ -185,5 +238,4 @@ class CheckoutScreen extends StatelessWidget {
       );
     }
   }
-
 }

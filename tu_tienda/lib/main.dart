@@ -6,12 +6,13 @@ import 'package:tu_tienda/screens/create_shop.dart';
 import 'package:tu_tienda/screens/product_detail_screen.dart';
 import 'package:tu_tienda/screens/register_screen.dart';
 import 'package:tu_tienda/screens/seller_dashboard_screen.dart';
+import 'package:tu_tienda/screens/seller_order_screen.dart';
 import 'package:tu_tienda/screens/shop_screen.dart';
 import 'screens/splash_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/cart_screen.dart';
-import 'screens/orders_screen.dart';
+import 'screens/buyer_orders_screen.dart';
 import 'package:tu_tienda/admin/screnns/security_dashboard_screen.dart';
 import 'package:provider/provider.dart';
 import 'providers/cart_provider.dart';
@@ -43,15 +44,16 @@ class MyApp extends StatelessWidget {
       home: const SplashScreen(),
       //definimos las rutas de navegacion
       routes: {
-        '/login': (context) => const LoginScreen(),
-        '/home': (context) => const MyHomePage(), //Tu pantalla principal
+        '/login': (context) => const LoginScreen(), //Pantalla de login
+        '/home': (context) => const MyHomePage(), //Pantalla principal
         '/register': (context) => const RegisterScreen(),
+        '/orders': (context) => const OrdersScreen(),
         '/securityDashboard': (context) => const SecurityDashboardScreen(),
         '/loginStats': (context) => const LoginStatsScreen(),
         '/createShop': (context) =>const CreateShopScreen(),
         '/cart': (context) => const CartScreen(),
         '/sellerDashboard': (context) => SellerDashboardScreen(),
-        '/orders': (context) => const OrdersScreen(), //Pantalla de login
+        '/seller-orders': (context) => const SellerOrderScreen(),  
         '/createProduct': (context) => const CreateProductScreen(),
         '/editProduct': (context) {
           final productId = ModalRoute.of(context)!.settings.arguments as String;

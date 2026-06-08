@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:tu_tienda/admin/services/telemetry_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'create_product_screen.dart';
+import 'package:tu_tienda/screens/seller_order_screen.dart';
 
 class SellerDashboardScreen extends StatefulWidget {
   const SellerDashboardScreen({super.key});
@@ -188,11 +189,11 @@ class _SellerDashboardScreenState extends State<SellerDashboardScreen> {
 
   Widget _buildStatsSection() {
     final user = FirebaseAuth.instance.currentUser;
-
+print("Dashboard cargado");
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
           .collection('orders')
-          .where('sellerId', isEqualTo: user!.uid)
+          .where('sellerIds', arrayContains: user!.uid)
           .snapshots(),
       builder: (context, ordersSnapshot) {
         return StreamBuilder<QuerySnapshot>(
@@ -295,7 +296,7 @@ class _SellerDashboardScreenState extends State<SellerDashboardScreen> {
                 icon: Icons.list,
                 label: "Ver Pedidos ",
                 onTap: () {
-                  Navigator.pushNamed(context, '/orders');
+                  Navigator.pushNamed(context, '/seller-orders');
                 },
               ),
             ],

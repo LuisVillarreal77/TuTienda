@@ -130,6 +130,7 @@ class ShopScreen extends StatelessWidget {
                 imageUrl: data['imageUrl'] ?? '',
                 category: data['category'] ?? '',
                 rating: (data['rating'] as num?)?.toDouble() ?? 0,
+                stock: data['stock'] ?? 0,
                 shopId: data['shopId'] ?? '',
                 sellerId: data['sellerId'] ?? '',
                 shopName: data['shopName'] ?? '',

@@ -15,10 +15,12 @@ class _CartScreenState extends State<CartScreen> {
 
   @override
   Widget build(BuildContext context) {
+
     final cart = Provider.of<CartProvider>(context);
+
     final cartItems = cart.cartItems;
 
-    double total = cartItems.fold(0.0, (sum, item) => sum + item.price);
+    final total = cart.totalPrice;
 
     return Scaffold(
       backgroundColor: Colors.grey[50],
@@ -43,24 +45,58 @@ class _CartScreenState extends State<CartScreen> {
                   child: ListView.builder(
                     itemCount: cartItems.length,
                     itemBuilder: (context, index) {
-                      final product = cartItems[index];
+
+                      final item = cartItems[index];
+                      final product = item.product;
 
                       return ListTile(
-                        leading: Image.asset(
-                          product.imageUrl,
+                        leading: Image.network(
+                          item.product.imageUrl,
                           width: 50,
                           height: 50,
                           fit: BoxFit.cover,
                         ),
-                        title: Text(product.name),
-                        subtitle: Text('\$${product.price}'),
-                        trailing: IconButton(
-                          icon: const Icon(Icons.delete),
-                          onPressed: () {
-                            cart.removeFromCart(
-                              index,
-                            ); // Notificar cambios en el carrito
-                          },
+                        title: Text(item.product.name),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('\$${item.product.price}'),
+                            Text('Cantidad: ${item.quantity}'),
+                            Text('Subtotal: \$${(item.product.price * item.quantity).toStringAsFixed(0)}'),
+                                                        ],
+                        ),
+                       trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+
+                            IconButton(
+                              icon: const Icon(Icons.remove),
+                              onPressed: () {
+                                cart.decreaseQuantity(item.product.id);
+                              },
+                            ),
+
+                            Text(
+                              item.quantity.toString(),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+
+                            IconButton(
+                              icon: const Icon(Icons.add),
+                              onPressed: () {
+                                cart.addToCart(item.product);
+                              },
+                            ),
+
+                            IconButton(
+                              icon: const Icon(Icons.delete),
+                              onPressed: () {
+                                cart.removeProduct(item.product.id);
+                              },
+                            ),
+                          ],
                         ),
                       );
                     },
