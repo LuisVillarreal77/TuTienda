@@ -1,5 +1,6 @@
 // splash_screen.dart
 import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -48,20 +49,48 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Future<void> _checkLogin() async {
-  await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 2));
 
-  if (!mounted) return;
+    if (!mounted) return;
 
-  final user = FirebaseAuth.instance.currentUser;
+    final user = FirebaseAuth.instance.currentUser;
 
-  print("Usuario actual: $user");
+    if (user == null) {
+      Navigator.pushReplacementNamed(context, '/login');
+      return;
+    }
 
-  if (user != null) {
-    Navigator.pushReplacementNamed(context, '/home');
-  } else {
-    Navigator.pushReplacementNamed(context, '/login');
+    try {
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+
+      if (!userDoc.exists) {
+        Navigator.pushReplacementNamed(context, '/login');
+        return;
+      }
+
+      final data = userDoc.data()!;
+      final role = data['role'] ?? 'buyer';
+
+      switch (role) {
+        case 'admin':
+          Navigator.pushReplacementNamed(context, '/securityDashboard');
+          break;
+
+        case 'seller':
+          Navigator.pushReplacementNamed(context, '/sellerDashboard');
+          break;
+
+          default:
+          Navigator.pushReplacementNamed(context, '/home');
+      }
+    } catch (e) {
+      print("Error verificando rol: $e");
+      Navigator.pushReplacementNamed(context, '/login');
+    }
   }
-}
 
   @override
   void dispose() {

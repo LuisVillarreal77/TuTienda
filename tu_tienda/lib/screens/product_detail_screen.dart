@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../providers/cart_provider.dart';
 import '../models/product.dart';
 import 'package:provider/provider.dart';
+import '../services/favorite_service.dart';
 
 class ProductDetailScreen extends StatelessWidget {
   final Product product;
@@ -22,10 +23,53 @@ class ProductDetailScreen extends StatelessWidget {
             icon: const Icon(Icons.share),
             onPressed: () => _shareProduct(context),
           ),
-          IconButton(
-            icon: const Icon(Icons.favorite_border),
-            onPressed: () => _toggleFavorite(),
-          ),
+           Positioned(
+                    top: 8,
+                    right: 8,
+                    child: StreamBuilder<bool>(
+                      stream: FavoriteService().isFavorite(product.id),
+                      builder: (context, snapshot) {
+                        final isFavorite = snapshot.data ?? false;
+
+                        return Container(
+                          width: 40,
+                          height: 40,
+                          // decoration: const BoxDecoration(
+                          //   color: Colors.white,
+                          //   shape: BoxShape.circle,
+                          // ),
+                          child: IconButton(
+                            onPressed: () async {
+                              await FavoriteService().toggleFavorite(
+                                product.id,
+                              );
+                            },
+                            padding: EdgeInsets.zero,
+                            splashRadius: 20,
+                           icon: Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                if (isFavorite)
+                                  const Icon(
+                                    Icons.favorite,
+                                    color: Colors.white,
+                                    size: 26,
+                                  ),
+
+                                Icon(
+                                  isFavorite
+                                      ? Icons.favorite
+                                      : Icons.favorite_border,
+                                  color: isFavorite ? Colors.red : Colors.grey,
+                                  size: 22,
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
           //Badge del carrito con AnimatedBuilder
           Consumer<CartProvider>(
             builder: (context, cart, child) {
@@ -375,7 +419,7 @@ class ProductDetailScreen extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         // especificaciones
-        _buildSpecItem('Material: ', 'Hecho a mono con materiales naturales.'),
+        _buildSpecItem('Material: ', 'Hecho a mano con materiales naturales.'),
         _buildSpecItem('Tamaño: ', 'Disponible en varias tallas.'),
         _buildSpecItem('Cuidados: ', 'Lavar a mano con agua fria.'),
         _buildSpecItem('Origen: ', 'Hecho a mano en Maria La Baja.'),
@@ -471,8 +515,8 @@ class ProductDetailScreen extends StatelessWidget {
     ).showSnackBar(const SnackBar(content: Text('Compartiendo producto...')));
   }
 
-  void _toggleFavorite() {
-    //Logica para añadir/eliminar de favoritos
-    print('Toggle favorite: ${product.name}');
-  }
+  // void _toggleFavorite() {
+  //   //Logica para añadir/eliminar de favoritos
+  //   print('Toggle favorite: ${product.name}');
+  // }
 }

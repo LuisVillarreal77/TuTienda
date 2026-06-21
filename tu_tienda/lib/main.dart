@@ -3,8 +3,10 @@ import 'package:tu_tienda/admin/screnns/login_stats_screen.dart';
 import 'package:tu_tienda/models/product.dart';
 import 'package:tu_tienda/screens/create_product_screen.dart';
 import 'package:tu_tienda/screens/create_shop.dart';
+import 'package:tu_tienda/screens/favorites_screen.dart';
 import 'package:tu_tienda/screens/product_detail_screen.dart';
 import 'package:tu_tienda/screens/register_screen.dart';
+import 'package:tu_tienda/screens/search_screen.dart';
 import 'package:tu_tienda/screens/seller_dashboard_screen.dart';
 import 'package:tu_tienda/screens/seller_order_screen.dart';
 import 'package:tu_tienda/screens/shop_screen.dart';
@@ -20,6 +22,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:tu_tienda/admin/services/telemetry_service.dart';
 import 'package:tu_tienda/screens/edit_product_screen.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -45,21 +48,24 @@ class MyApp extends StatelessWidget {
       //definimos las rutas de navegacion
       routes: {
         '/login': (context) => const LoginScreen(), //Pantalla de login
-        '/home': (context) => const MyHomePage(), //Pantalla principal
         '/register': (context) => const RegisterScreen(),
+        '/home': (context) => const MyHomePage(), //Pantalla principal
+        '/search': (context) => const SearchScreen(),
+        '/favorites': (context) => const FavoritesScreen(),
         '/orders': (context) => const OrdersScreen(),
         '/securityDashboard': (context) => const SecurityDashboardScreen(),
         '/loginStats': (context) => const LoginStatsScreen(),
-        '/createShop': (context) =>const CreateShopScreen(),
+        '/createShop': (context) => const CreateShopScreen(),
         '/cart': (context) => const CartScreen(),
         '/sellerDashboard': (context) => SellerDashboardScreen(),
-        '/seller-orders': (context) => const SellerOrderScreen(),  
+        '/seller-orders': (context) => const SellerOrderScreen(),
         '/createProduct': (context) => const CreateProductScreen(),
         '/editProduct': (context) {
-          final productId = ModalRoute.of(context)!.settings.arguments as String;
+          final productId =
+              ModalRoute.of(context)!.settings.arguments as String;
           return EditProductScreen(productId: productId);
         },
-        
+
         '/productDetail': (context) {
           final product = ModalRoute.of(context)!.settings.arguments as Product;
           return ProductDetailScreen(product: product);
